@@ -4,12 +4,14 @@ import "./globals.css";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import ThemeProvider from "@/components/ThemeProvider/ThemeProvider";
+import { NextAuthProvider } from "@/components/AuthProvider/AuthProvider";
+import Toast from "@/components/Toast/Toast";
 
-const poppins = Poppins({ 
+const poppins = Poppins({
   subsets: ["latin"],
-  weight:["400","500","700","900"],
-  style:["italic","normal"],
-  variable:"--font-poppins" 
+  weight: ["400", "500", "700", "900"],
+  style: ["italic", "normal"],
+  variable: "--font-poppins"
 });
 
 export const metadata: Metadata = {
@@ -25,13 +27,16 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body className={poppins.className}>
-       <ThemeProvider>
-       <main className="font-normal">
-          <Header/>
-          {children}
-          <Footer/>
-        </main>
-       </ThemeProvider>
+        <NextAuthProvider>
+          <ThemeProvider>
+            <Toast/>
+            <main className="font-normal">
+              <Header />
+              {children}
+              <Footer />
+            </main>
+          </ThemeProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );
