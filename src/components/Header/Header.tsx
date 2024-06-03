@@ -22,7 +22,7 @@ const Header = () => {
                     <li className="flex items-center">
                         {session?.user ? (<Link className="" href={`/users/${session.user.id}`}>
                            {session.user.image ? <div className="w-10 h-10 rounded-full overflow-hidden">
-                            <Image src={session.user.image} alt={session.user.name!} width={40} height={40} />
+                            <Image src={session.user.image} alt={session.user.name!} width={40} height={40} className="img scale-animation" />
                            </div> : <FaUserCircle className="cursor-pointer" /> }
                         </Link>) : (<Link className="" href={'/auth'}>
                             <FaUserCircle className="cursor-pointer" />
