@@ -8,7 +8,7 @@ const roomTypes = [
   ];
 const hotelRoom = {
     name: "hotelRoom",
-    title: "Quarto de hotel",
+    title: "Hotel room",
     type: "document",
     fields: [
         defineField({

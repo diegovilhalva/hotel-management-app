@@ -2,7 +2,7 @@ import { defineField } from "sanity"
 
 const review = {
     name: "review",
-    title: "Avaliação",
+    title: "Review",
     type: "document",
     fields: [
         defineField({
