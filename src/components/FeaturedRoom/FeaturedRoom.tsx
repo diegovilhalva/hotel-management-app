@@ -9,7 +9,8 @@ type Props = {
 
 const FeaturedRoom: FC<Props> = props => {
   const { featuredRoom } = props
-  console.log(featuredRoom)
+
+
   return (
     <section className='flex md:flex-row flex-col px-4 py-10 items-center gap-12 container mx-auto'>
       <div className='md:grid gap-8 grid-cols-1'>
