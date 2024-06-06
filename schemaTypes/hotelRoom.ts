@@ -100,7 +100,7 @@ const hotelRoom = {
             initialValue:1
         }),
         defineField({
-            name:"offeredAmenit",
+            name:"offeredAmenities",
             title:"Comodidades",
             type:"array",
             of:[
