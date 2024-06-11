@@ -18,6 +18,8 @@ const RoomDetails = (props: { params: { slug: string } }) => {
 
     const [checkinDate,setCheckinDate] = useState<Date | null>(null)
     const [checkoutDate,setCheckoutDate] = useState<Date | null>(null)
+    const [adults,setAdults] = useState(1)
+    const [children,setChildren] = useState(0)
     const fetchRoom = async () => getRoom(slug)
     const { data: room, error, isLoading } = useSWR('/api/room', fetchRoom)
     if (error) throw new Error("Não foi possível carregar os dados")
@@ -31,6 +33,10 @@ const RoomDetails = (props: { params: { slug: string } }) => {
             return nextDay
         }
         return null
+    }
+
+    const handleBookNowClick = () => {
+        
     }
     return (
         <div>
@@ -108,7 +114,9 @@ const RoomDetails = (props: { params: { slug: string } }) => {
                     </div>
                     <div className="md:col-span-4 rounded-xl shadow-lg dark:shadow dark:shadow-white sticky top-10 h-fit">
                         <BookRoomCta discount={room.discount} price={room.price} 
-                        specialNote={room.specialNote} checkinDate={checkinDate} setCheckinDate={setCheckinDate} checkoutDate={checkoutDate} setCheckoutDate={setCheckoutDate} calcminCheckoutDate={calcminCheckoutDate}/>
+                        specialNote={room.specialNote} checkinDate={checkinDate} setCheckinDate={setCheckinDate} checkoutDate={checkoutDate} 
+                        setCheckoutDate={setCheckoutDate} calcminCheckoutDate={calcminCheckoutDate} setAdults={setAdults} adults={adults} 
+                        setChildren={setChildren}  children={children} isBooked={room.isBooked} handleBookNowClick={handleBookNowClick}/>
                     </div>
                 </div>
             </div>
