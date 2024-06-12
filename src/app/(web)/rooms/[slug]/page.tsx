@@ -9,6 +9,9 @@ import { AiOutlineMedicineBox } from "react-icons/ai"
 import { GiSmokeBomb } from "react-icons/gi"
 import BookRoomCta from "@/components/BookRoomCta/BookRoomCta"
 import { useState } from "react"
+import toast from "react-hot-toast"
+import axios from "axios"
+import { getStripe } from "@/libs/stripe"
 
 
 const RoomDetails = (props: { params: { slug: string } }) => {
@@ -16,10 +19,10 @@ const RoomDetails = (props: { params: { slug: string } }) => {
         params: { slug }
     } = props
 
-    const [checkinDate,setCheckinDate] = useState<Date | null>(null)
-    const [checkoutDate,setCheckoutDate] = useState<Date | null>(null)
-    const [adults,setAdults] = useState(1)
-    const [children,setChildren] = useState(0)
+    const [checkinDate, setCheckinDate] = useState<Date | null>(null)
+    const [checkoutDate, setCheckoutDate] = useState<Date | null>(null)
+    const [adults, setAdults] = useState(1)
+    const [children, setChildren] = useState(0)
     const fetchRoom = async () => getRoom(slug)
     const { data: room, error, isLoading } = useSWR('/api/room', fetchRoom)
     if (error) throw new Error("Não foi possível carregar os dados")
@@ -35,8 +38,42 @@ const RoomDetails = (props: { params: { slug: string } }) => {
         return null
     }
 
-    const handleBookNowClick = () => {
+    const handleBookNowClick = async () => {
+        if (!checkinDate || !checkoutDate) return toast.error('Por favor adicione as datas de checkin / checkout')
+        if (checkinDate > checkoutDate) return toast.error('Por favor insire uma data válida')
         
+        const numberOfDays = calcNumDays()
+
+        const hotelRoomSlug = room.slug.current
+        const stripe = await getStripe() 
+        try {
+            const {data:stripeSession} = await axios.post('/api/stripe',{
+                checkinDate,
+                checkoutDate,
+                adults,
+                children,
+                numberOfDays,
+                hotelRoomSlug
+            })
+            if (stripe) {
+                const result = await stripe.redirectToCheckout({
+                    sessionId:stripeSession.id
+                })   
+                if (result.error) {
+                    toast.error("Ocorreu um erro ao gerar pagamento")
+                }
+            }
+
+        } catch (error) {
+            console.log(error)
+            toast.error('Ocorreu um erro')
+        }
+    }
+    const calcNumDays =() => {
+        if(!checkinDate || !checkoutDate) return;
+        const timeDiff = checkoutDate.getTime() - checkinDate.getTime()
+        const noOfDays = Math.ceil(timeDiff / (24 * 60 * 60 * 1000))
+        return noOfDays
     }
     return (
         <div>
@@ -113,10 +150,10 @@ const RoomDetails = (props: { params: { slug: string } }) => {
                         </div>
                     </div>
                     <div className="md:col-span-4 rounded-xl shadow-lg dark:shadow dark:shadow-white sticky top-10 h-fit">
-                        <BookRoomCta discount={room.discount} price={room.price} 
-                        specialNote={room.specialNote} checkinDate={checkinDate} setCheckinDate={setCheckinDate} checkoutDate={checkoutDate} 
-                        setCheckoutDate={setCheckoutDate} calcminCheckoutDate={calcminCheckoutDate} setAdults={setAdults} adults={adults} 
-                        setChildren={setChildren}  children={children} isBooked={room.isBooked} handleBookNowClick={handleBookNowClick}/>
+                        <BookRoomCta discount={room.discount} price={room.price}
+                            specialNote={room.specialNote} checkinDate={checkinDate} setCheckinDate={setCheckinDate} checkoutDate={checkoutDate}
+                            setCheckoutDate={setCheckoutDate} calcminCheckoutDate={calcminCheckoutDate} setAdults={setAdults} adults={adults}
+                            setChildren={setChildren} children={children} isBooked={room.isBooked} handleBookNowClick={handleBookNowClick} />
                     </div>
                 </div>
             </div>
