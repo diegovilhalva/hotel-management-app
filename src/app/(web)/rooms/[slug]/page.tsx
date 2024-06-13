@@ -29,7 +29,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
     if (typeof room === 'undefined' && !isLoading) throw new Error("Não foi possível carregar os dados")
     if (!room) return <LoadingSpinner />;
 
-    const calcminCheckoutDate = () => {
+        const calcminCheckoutDate = () => {
         if (checkinDate) {
             const nextDay = new Date(checkinDate)
             nextDay.setDate(nextDay.getDate() + 1)

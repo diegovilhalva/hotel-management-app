@@ -40,31 +40,41 @@ export async function POST(req: Request, res: Response) {
         const discountPrice = room.price - (room.price / 100) * room.discount
         const totalPrice = discountPrice * numberOfDays
 
-        const stripesSession = await stripe.checkout.sessions.create({
-            mode:'payment',
-            line_items:[
-                {
-                    quantity:1,
-                    price_data:{
-                        currency:'brl',
-                        product_data:{
-                            name:room.name,
-                            images:room.images.map(image => image.url)
-                        },
-                        unit_amount:parseInt((totalPrice * 100).toString())
-                    },
-                    
-                }
+        const stripeSession = await stripe.checkout.sessions.create({
+            mode: 'payment',
+            line_items: [
+              {
+                quantity: 1,
+                price_data: {
+                  currency: 'brl',
+                  product_data: {
+                    name: room.name,
+                    images: room.images.map(image => image.url),
+                  },
+                  unit_amount: parseInt((totalPrice * 100).toString()),
+                },
+              },
             ],
-            payment_method_types:['card'],
-            success_url:`${origin}/users/${userId}`
-        })
-        return NextResponse.json(stripesSession,{
+            payment_method_types: ['card'],
+            success_url: `${origin}/users/${userId}`,
+            metadata: {
+              adults,
+              checkinDate: formattedCheckInDate,
+              checkoutDate: formattedCheckOutDate,
+              children,
+              hotelRoom: room._id,
+              numberOfDays,
+              user: userId,
+              discount: room.discount,
+              totalPrice
+            }
+          });
+        return NextResponse.json(stripeSession,{
             status:200,
             statusText:'Sessão de pagamento criada'
         })
     } catch (error) {
         console.log("Erro ao gerar pagamento")
-        return new NextResponse("Ocorreu um erro, tent novamente mais tarde", { status: 500 })
+        return new NextResponse("Ocorreu um erro, tente novamente mais tarde", { status: 500 })
     }
 }
